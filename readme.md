@@ -55,16 +55,16 @@ Sumber dataset diambil dari webiste kaggle: [kaggle dataset](https://www.kaggle.
 
 ## Data Preparation
 ---
-**1. Menyamakan Penamaan Kolom menjadi Lower Case**
+**1. Menyamakan Penamaan Kolom menjadi Lower Case** <br>
 Tujuannya adalah untuk konsistensi dalam penamaan kolom, sehingga lebih mudah diakses dan tidak rentan terhadap kesalahan akibat case-sensitive.
 
-**2. Mengisi Missing Values dengan Metode Multiple Imputer**
+**2. Mengisi Missing Values dengan Metode Multiple Imputer**<br>
 Menggunakan teknik imputasi berbasis algoritma, seperti _Iterative Imputer_ atau _KNN Imputer_, untuk mengisi nilai yang hilang berdasarkan pola dalam data lain.
 
-**3. Membuat Fitur Baru dengan Tipe Kategorikal dari Fitur Numerikal**
+**3. Membuat Fitur Baru dengan Tipe Kategorikal dari Fitur Numerikal** <br>.
 Fitur numerik diubah menjadi kategorikal berdasarkan rentang nilai tertentu, misalnya _binning_ untuk mengelompokkan data ke dalam kategori.
 
-**4. Menskalakan Nilai Dataset antara -1 dan 1**
+**4. Menskalakan Nilai Dataset antara -1 dan 1** <br>
 Menskalakan nilai fitur untuk memastikan bahwa data numerik berada dalam skala yang sama, yang penting untuk algoritma berbasis gradien atau jarak.
 
 > ==Poin-poin diatas sebagai pipeline yang memastikan bahwa data **train** dan **test** memiliki struktur dan transformasi yang sama, sehingga kompatibel untuk digunakan dalam model pembelajaran mesin.==
@@ -89,13 +89,13 @@ Model yang menunjukan akurasi lebih tinggi dalam prediksi akan dipilih untuk pro
 
 Selain itu, masing-masing model memiliki kelebihan dan kekurangan tersendiri, Berikut adalah masing-masing kelebihan dan kekurangan dari algoritma **Logistic Regression**, **Support Vector Machine (SVM)**, dan **Random Forest** secara global:
 
-**1. Logistic Regression**
+**1. Logistic Regression** <br>
 Kelebihan Logistic Regression adalah interpretasi hasil yang jelas, efisien untuk dataset kecil hingga menengah, dan tidak memerlukan banyak tuning. Namun, model ini kurang efektif untuk data non-linier, sensitif terhadap outlier, dan tidak fleksibel dalam menangani hubungan kompleks antar variabel.
 
-**2. Support Vector Machine (SVM)**
+**2. Support Vector Machine (SVM)** <br>
 SVM unggul dalam menangani data berdimensi tinggi, bekerja baik dengan data non-linier berkat kernel, dan optimal untuk dataset kecil. Kekurangannya adalah proses pelatihan yang lambat untuk dataset besar, hasil sulit diinterpretasi, dan kinerja sangat bergantung pada tuning parameter.
 
-**3. Random Forest**
+**3. Random Forest** <br>
 Random Forest mampu mengurangi overfitting, bekerja baik pada data kompleks dan besar, serta dapat mengidentifikasi fitur penting. Namun, model ini sulit diinterpretasikan, membutuhkan komputasi tinggi, dan performa optimal memerlukan tuning parameter yang cermat.
 
 Hasil dari training didapatkan dengan model Random Forest memiliki akurasi yang lebih tinggi, selanjutnya model tersebut yang akan digunakan dalam [hyperparameter-tuning](###Hyperparameter-tuning).
@@ -117,6 +117,7 @@ Proses ini akan menggunakan Model [**Random Forest**](https://scikit-learn.org/1
 | max_depth         | [25, 35, 85, None]   |
 | min_samples_split | [2, 15, 20, 30, 35]  |
 | min_samples_leaf  | [1, 15, 20]          |
+
 Contoh implementasi pada kode python
 ```python
 params_rf = {
@@ -141,26 +142,35 @@ Hasil dari pencarian grid search:
 RandomForestClassifier(max_depth=35, n_estimators=850, random_state=42)
 ```
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan kelebihan dan kekurangan dari setiap algoritma yang digunakan.
-- Jika menggunakan satu algoritma pada solution statement, lakukan proses improvement terhadap model dengan hyperparameter tuning. **Jelaskan proses improvement yang dilakukan**.
-- Jika menggunakan dua atau lebih algoritma pada solution statement, maka pilih model terbaik sebagai solusi. **Jelaskan mengapa memilih model tersebut sebagai model terbaik**.
 
 ## Evaluation
-Pada bagian ini anda perlu menyebutkan metrik evaluasi yang digunakan. Lalu anda perlu menjelaskan hasil proyek berdasarkan metrik evaluasi yang digunakan.
 
-Sebagai contoh, Anda memiih kasus klasifikasi dan menggunakan metrik **akurasi, precision, recall, dan F1 score**. Jelaskan mengenai beberapa hal berikut:
-- Penjelasan mengenai metrik yang digunakan
-- Menjelaskan hasil proyek berdasarkan metrik evaluasi
+Metrik evaluasi yang digunakan pada pengembangan model ini antara lain:
+1. **Accuracy**
+	Accuracy adalah metrik evaluasi yang mengukur sejauh mana model memprediksi kelas dengan benar. Ini dihitung dengan membandingkan jumlah prediksi benar terhadap total jumlah data. Accuracy sering digunakan sebagai metrik dasar untuk _classification tasks_, tetapi menjadi kurang efektif jika dataset memiliki kelas yang tidak seimbang, seperti pada ini.
+2. **Precision**
+	Precision mengukur seberapa akurat model dalam memprediksi kelas positif dari semua prediksi positif yang dibuat. Fokus utamanya adalah meminimalkan _False Positive_ (FP), yaitu prediksi salah untuk kelas positif.
 
-Ingatlah, metrik evaluasi yang digunakan harus sesuai dengan konteks data, problem statement, dan solusi yang diinginkan.
 
-**Rubrik/Kriteria Tambahan (Opsional)**: 
-- Menjelaskan formula metrik dan bagaimana metrik tersebut bekerja.
+### Precision
+Pada kasus ini, matrik Precision akan dimaksimalkan nilainya, melihat False Positive sangat beresiko. Artinya, dalam keadaan model salah dalam memprediksi air bersifat potable menjadi resiko yang sangat fatal, `karena model akan memprediksi air kotor sebagai air bersih`.
 
-**---Ini adalah bagian akhir laporan---**
+Nilai probabilitas pada prediksi model akan dibatasi dengan `threshold=0.7`, berartikan model akan dianggap `True` apabila probabilitas mencapai diatas threshold yang ditentukan. Berikut tabel hasil klasifikasi dan confusion martix:
 
-_Catatan:_
-- _Anda dapat menambahkan gambar, kode, atau tabel ke dalam laporan jika diperlukan. Temukan caranya pada contoh dokumen markdown di situs editor [Dillinger](https://dillinger.io/), [Github Guides: Mastering markdown](https://guides.github.com/features/mastering-markdown/), atau sumber lain di internet. Semangat!_
-- Jika terdapat penjelasan yang harus menyertakan code snippet, tuliskan dengan sewajarnya. Tidak perlu menuliskan keseluruhan kode project, cukup bagian yang ingin dijelaskan saja.
+#### Classification Report
 
+|              | precision | recall   | f1-score | support    |
+| ------------ | --------- | -------- | -------- | ---------- |
+| non potable  | 0.635634  | 0.990000 | 0.774194 | 400.000000 |
+| potable      | 0.878788  | 0.113281 | 0.200692 | 256.000000 |
+| accuracy     | 0.647866  | 0.647866 | 0.647866 | 0.647866   |
+| macro avg    | 0.757211  | 0.551641 | 0.487443 | 656.000000 |
+| weighted avg | 0.730523  | 0.647866 | 0.550388 | 656.000000 |
+
+#### Confusion Matrix
+![[Pasted image 20241216182725.png]]
+
+
+---
+
+Refernces:
