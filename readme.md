@@ -169,7 +169,7 @@ Nilai probabilitas pada prediksi model akan dibatasi dengan `threshold=0.7`, ber
 |              |           |          |          |            |
 
 #### Confusion Matrix
-<a img="https://github.com/sayid-alt/water-quality-prediction/blob/main/images/Pasted%20image%2020241216182324.png?raw=true"/>
+<img src="https://github.com/sayid-alt/water-quality-prediction/blob/main/images/Pasted%20image%2020241216182324.png?raw=true"/>
 
 
 ---
