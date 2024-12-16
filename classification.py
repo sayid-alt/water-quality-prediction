@@ -459,7 +459,7 @@ class TestModels():
                }
 
 # %% [code] {"execution":{"iopub.status.busy":"2024-12-16T09:22:15.244095Z","iopub.execute_input":"2024-12-16T09:22:15.244477Z","iopub.status.idle":"2024-12-16T09:22:17.107687Z","shell.execute_reply.started":"2024-12-16T09:22:15.244445Z","shell.execute_reply":"2024-12-16T09:22:17.106655Z"}}
-%time
+
 models_dict = {
     'lg' : LogisticRegression(),
     'svm' : SVC(),
@@ -476,7 +476,7 @@ score_df = pd.DataFrame(models_eval)
 score_df.sort_values(by=[f'{section_name}_train_scores', f'{section_name}_test_scores'], ascending=False)
 
 # %% [code] {"execution":{"iopub.status.busy":"2024-12-16T09:22:17.109284Z","iopub.execute_input":"2024-12-16T09:22:17.109728Z","iopub.status.idle":"2024-12-16T09:22:20.669003Z","shell.execute_reply.started":"2024-12-16T09:22:17.109679Z","shell.execute_reply":"2024-12-16T09:22:20.667828Z"}}
-%%time
+
 
 # With stratified shuffle split
 sss = StratifiedShuffleSplit(n_splits=2, test_size=0.2, random_state=42)
@@ -563,7 +563,7 @@ score_resampled_df.sort_values(by=[f'{section_name}_train_scores', f'{section_na
 from sklearn.model_selection import RandomizedSearchCV, GridSearchCV
 
 # %% [code] {"execution":{"iopub.status.busy":"2024-12-16T10:00:40.653327Z","iopub.execute_input":"2024-12-16T10:00:40.653787Z","iopub.status.idle":"2024-12-16T10:14:43.952284Z","shell.execute_reply.started":"2024-12-16T10:00:40.653745Z","shell.execute_reply":"2024-12-16T10:14:43.951186Z"}}
-%%time
+
 params_rf = {
     'n_estimators' : [100, 150, 250, 850],
     'max_depth' : [25, 35, 85, None],
