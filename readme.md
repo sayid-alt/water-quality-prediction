@@ -1,4 +1,4 @@
-# Laporan Proyek Machine Learning - Nama Anda
+# Laporan Proyek Machine Learning - Sayid Muhammad Heykal
 
 ## Domain Proyek
 
