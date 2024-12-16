@@ -166,9 +166,10 @@ Nilai probabilitas pada prediksi model akan dibatasi dengan `threshold=0.7`, ber
 | accuracy     | 0.647866  | 0.647866 | 0.647866 | 0.647866   |
 | macro avg    | 0.757211  | 0.551641 | 0.487443 | 656.000000 |
 | weighted avg | 0.730523  | 0.647866 | 0.550388 | 656.000000 |
+|              |           |          |          |            |
 
 #### Confusion Matrix
-![[Pasted image 20241216182725.png]]
+![[/images/Pasted image 20241216182725.png]]
 
 
 ---
