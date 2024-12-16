@@ -174,4 +174,6 @@ Nilai probabilitas pada prediksi model akan dibatasi dengan `threshold=0.7`, ber
 
 ---
 
-Refernces:
+# Refernces:
+* https://link.springer.com/article/10.1007/s12403-020-00357-6
+* *Ji, Y., Wu, J., Wang, Y. et al. Seasonal Variation of Drinking Water Quality and Human Health Risk Assessment in Hancheng City of Guanzhong Plain, China. Expo Health **12**, 469–485 (2020). https://doi.org/10.1007/s12403-020-00357-6*
