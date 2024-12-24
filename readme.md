@@ -55,11 +55,45 @@ Sumber dataset diambil dari webiste kaggle: [kaggle dataset](https://www.kaggle.
 
 ## Data Preparation
 ---
+
+### Data Cleaning
+
 **1. Menyamakan Penamaan Kolom menjadi Lower Case** <br>
 Tujuannya adalah untuk konsistensi dalam penamaan kolom, sehingga lebih mudah diakses dan tidak rentan terhadap kesalahan akibat case-sensitive.
 
+Contoh kode yang digunakan.
+```python
+class LowerColumnNames(TransformerMixin):
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        X.columns = X.columns.str.lower()
+        return X
+
+train_split = LowerColumnNames().fit_transform(train_split)
+```
+
 **2. Mengisi Missing Values dengan Metode Multiple Imputer**<br>
 Menggunakan teknik imputasi berbasis algoritma, seperti _Iterative Imputer_ atau _KNN Imputer_, untuk mengisi nilai yang hilang berdasarkan pola dalam data lain.
+
+Contoh kode yang digunakan:
+```python
+# explicitly require this experimental feature
+from sklearn.experimental import enable_iterative_imputer  # noqa
+# now you can import normally from sklearn.impute
+from sklearn.impute import IterativeImputer
+
+class MultipleImputer(TransformerMixin):
+    def fit(self, X, y=None):
+        return self
+    def transform(self, X):
+        imp = IterativeImputer(random_state=9122024)
+        return pd.DataFrame(imp.fit_transform(X), columns=features)
+        
+train_cleaned = MultipleImputer().fit_transform(train_cleaned)
+```
+
 
 **3. Membuat Fitur Baru dengan Tipe Kategorikal dari Fitur Numerikal** <br>.
 Fitur numerik diubah menjadi kategorikal berdasarkan rentang nilai tertentu, misalnya _binning_ untuk mengelompokkan data ke dalam kategori.
@@ -80,6 +114,7 @@ preproc_pipe = Pipeline([
 ])
 
 ```
+
 ## Modeling
 ### Training and Predictions
 
