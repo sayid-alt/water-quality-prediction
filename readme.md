@@ -111,6 +111,7 @@ Grafik diatas menunjukkan sebaran data yang normal pada setiap fitur. walaupun t
 2. Correlation
 Merupakan pengukuran korelasi antar fitur, dengan indikator jarak -1 dan 1 yang dikategorikan sebagai positif atau negatif korelasi. Berikut nilai korelasi antar fitur dengan diagram heatmap
 
+<img src='https://github.com/sayid-alt/water-quality-prediction/blob/main/images/plot_correlation.png?raw=true'/>
 
 
 
