@@ -108,6 +108,12 @@ Plot gambar diatas menunjukkan ketidakseimbangan data target pada dataset atau d
 
 Grafik diatas menunjukkan sebaran data yang normal pada setiap fitur. walaupun terlihat normal, terlihat pada beberapa fitur yang berpotensi memiliki nilai outliers.
 
+2. Correlation
+Merupakan pengukuran korelasi antar fitur, dengan indikator jarak -1 dan 1 yang dikategorikan sebagai positif atau negatif korelasi. Berikut nilai korelasi antar fitur dengan diagram heatmap
+
+
+
+
 
 **3. Membuat Fitur Baru dengan Tipe Kategorikal dari Fitur Numerikal** <br>
 Fitur numerik diubah menjadi kategorikal berdasarkan rentang nilai tertentu, misalnya _binning_ untuk mengelompokkan data ke dalam kategori.
