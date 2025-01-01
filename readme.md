@@ -243,7 +243,7 @@ Hasil dari training didapatkan dengan model Random Forest memiliki akurasi yang 
 | LogisticRegression     | 0.609924              | 0.609756             |
 
 ### Resampling Unbalanced Data
-Kita akan melihat bagaimana data didistribusikan pada level dimensi yang lebih rendah. Oleh karena itu, hal pertama yang akan kita lakukan adalah menurunkan level dimensi menjadi hanya 2 dimensi, sehingga dapat dengan mudah diplot menjadi grafik. Dalam kasus ini, kita akan menggunakan metode pca.
+Kita akan melihat bagaimana data didistribusikan pada level dimensi yang lebih rendah. Oleh karena itu, hal pertama yang akan kita lakukan adalah menurunkan level dimensi menjadi hanya 2 dimensi, sehingga dapat dengan mudahre diplot menjadi grafik. Dalam kasus ini, kita akan menggunakan metode pca.
 
 <img src='https://github.com/sayid-alt/water-quality-prediction/blob/main/images/plot_target_distribution.png?raw=true' />
 <img src='https://github.com/sayid-alt/water-quality-prediction/blob/main/images/target_distribution.png?raw=true' />
