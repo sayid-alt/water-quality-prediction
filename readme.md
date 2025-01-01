@@ -113,27 +113,105 @@ Merupakan pengukuran korelasi antar fitur, dengan indikator jarak -1 dan 1 yang 
 
 <img src='https://github.com/sayid-alt/water-quality-prediction/blob/main/images/plot_correlation.png?raw=true'/>
 
+3. Outliers
+Seperti yang disebutkan sebelumnya, meskipun distribusi data terlihat menyerupai *bell curve* yang menunjukkan sebaran yang normal, tetap masih terlihat beberapa data outliers pada setiap fitur.  Metode *interquartile* pada kali ini digunakan untuk mengidentifikasi data outliers, sehingga dapat kita lihat total dari data outliers yang kemudian dapat menentukan strategi yang sesuai.
 
+<img src='https://github.com/sayid-alt/water-quality-prediction/blob/main/images/plot_outliers.png?raw=true' alt='outliers boxplot'/>
 
+Gambar diatas menunjukkan outliers pada setiap fitur. Titik-titik diluar batas atas dan bawah merupakan data outliers. Meskipun demikian, diperlukannya kalkulasi jumlah secara tepat terkait data outliers tersebut.
 
-**3. Membuat Fitur Baru dengan Tipe Kategorikal dari Fitur Numerikal** <br>
+Kode python berikut menghasilkan nilai output dari rangkuman mengenai data outliers
+
+```python
+# Count if the rows has an existing outliers of column
+rows_with_outliers = train_split[train_split[(train_split < lower_bound) | (train_split > upper_bound)].any(axis=1)]
+potability_0_outliers = rows_with_outliers[rows_with_outliers['potability'] == 0]
+potability_1_outliers = rows_with_outliers[rows_with_outliers['potability'] == 1]
+
+outliers_percentage = len(rows_with_outliers) / len(train_split) * 100
+potability_0_outliers_percentage = len(potability_0_outliers) / len(train_split) * 100
+potability_1_outliers_percentage = len(potability_1_outliers) / len(train_split) * 100
+
+print(f"Number of rows with outliers: \33[33m{len(rows_with_outliers)}\33[0m")
+print(f"Number of potability rows with outliers: \33[33m{len(potability_0_outliers)}\33[0m")
+print(f"Number of non-potability rows with outliers: \33[33m{len(potability_1_outliers)}\33[0m\n")
+print(f"Percentage of rows with outliers: \33[33m{outliers_percentage:.2f}%\33[0m")
+print(f"Percentage of potability rows with outliers: \33[33m{potability_0_outliers_percentage:.2f}%\33[0m")
+print(f"Percentage of non-potability with outliers: \33[33m{potability_1_outliers_percentage:.2f}%\33[0m")
+```
+Output
+```
+Number of rows with outliers: 267
+Number of potability rows with outliers: 147
+Number of non-potability rows with outliers: 120
+
+Percentage of rows with outliers: 10.19%
+Percentage of potability rows with outliers: 5.61%
+Percentage of non-potability with outliers: 4.58%
+```
+
+**SUMMARY**:  
+
+- The outliers are quite higher as it reaches to 10% of data has been indiceted as an outliers.
+- Handling it with removal or transformation makes it poor quality of data. Which in this case related to data of water quality that requires accurate data.
+
+**STRATEGY**:  
+
+- Instead of removing or transforming the outliers data, we'll examine it using the robust algorithm like tree-based algorithm `(Decision Tree, Random Forest)`.
+
+### Data Perprocessing
+
+**1 . Membuat Fitur Baru dengan Tipe Kategorikal dari Fitur Numerikal** <br>
 Fitur numerik diubah menjadi kategorikal berdasarkan rentang nilai tertentu, misalnya _binning_ untuk mengelompokkan data ke dalam kategori.
 
+```python
+class NumericalCutterAttribs(BaseEstimator, TransformerMixin):
+    def __init__(self, columns):
+        self._columns = columns
+    
+    def fit(self, X, y=None):
+        return self
+
+    def transform(self, X):
+        df = X.copy()
+        for col in self._columns:
+            col_cut = pd.qcut(X[col], 4, labels=[0,1,2,3])
+            df[f"{col}_cut"] = col_cut
+
+        return df
+```
+Kode Python di atas adalah implementasi kelas yang merupakan turunan dari dua kelas utama di scikit-learn: BaseEstimator dan TransformerMixin. Berikut penjelasannya:
+
+1. BaseEstimator:
+	 BaseEstimator adalah kelas dasar (base class) di scikit-learn yang digunakan untuk membuat estimator kustom. Dengan mewarisi kelas ini, kita dapat memanfaatkan metode bawaan seperti pengelolaan parameter model (misalnya, mendapatkan atau mengatur parameter dengan get_params dan set_params).
+2. TransformerMixin:
+	TransformerMixin menyediakan kerangka kerja untuk membuat transformer kustom yang dapat digunakan dalam pipeline. Dengan mewarisi kelas ini, kita dapat menambahkan metode seperti fit_transform, sehingga proses transformasi data dapat diterapkan langsung dalam pipeline scikit-learn.
+
+Jadi, implementasi ini memungkinkan kita membuat transformer atau model kustom yang dapat bekerja mulus dalam pipeline scikit-learn, baik untuk pelatihan maupun proses prediksi, tanpa harus menulis kode dari nol.
+
 **4. Menskalakan Nilai Dataset antara -1 dan 1** <br>
-Menskalakan nilai fitur untuk memastikan bahwa data numerik berada dalam skala yang sama, yang penting untuk algoritma berbasis gradien atau jarak.
+	Selanjutnya, kita akan memasukkan semuanya ke dalam satu alur kerja. Berikut adalah kode cara penerapannya. Alur kerja terakhir adalah menskalakan semua nilai. Kita akan menggunakan metode StandardScaler, yang akan menormalkan semua nilai, sehingga semua nilai rata-rata akan sama dengan 0 dan simpangan baku sama dengan 1.
+
+
 
 > ==Poin-poin diatas sebagai pipeline yang memastikan bahwa data **train** dan **test** memiliki struktur dan transformasi yang sama, sehingga kompatibel untuk digunakan dalam model pembelajaran mesin.==
 
 Berikut contoh pada kode python dalam implementasi pipeline tersebut menggunakan library scikit-learn
 
 ```python
-preproc_pipe = Pipeline([
-    ('columns_lowercase', LowerColumnNames()),  # Lowercase column names
-    ('imputer', IterativeImputer()),            # Fill missing values
-    ('numerical_cutter', NumericalCutterAttribs(columns_to_cut=['ph', 'hardness'])),  # Extract categorical features
-    ('scaler', StandardScaler())               # Scale dataset to range -1, 1
-])
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import MinMaxScaler, StandardScaler
 
+# columns that will cut to the categorical feture
+columns_to_cut = ["ph", "hardness"]
+
+# store the pipeline processsing.
+preproc_pipe = Pipeline([
+    ('columns_lowercase', LowerColumnNames()), # lowercase pipeline
+    ('imputer', MultipleImputer()), # imputing the missing values
+    ('numerical_cutter', NumericalCutterAttribs(columns_to_cut)), # cut numerical into categorical feature
+    ('scaler', StandardScaler()) # scaling
+])
 ```
 
 ## Modeling
