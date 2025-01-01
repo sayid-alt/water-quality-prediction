@@ -242,6 +242,31 @@ Hasil dari training didapatkan dengan model Random Forest memiliki akurasi yang 
 | SVC                    | 0.746565              | 0.679878             |
 | LogisticRegression     | 0.609924              | 0.609756             |
 
+### Resampling Unbalanced Data
+Kita akan melihat bagaimana data didistribusikan pada level dimensi yang lebih rendah. Oleh karena itu, hal pertama yang akan kita lakukan adalah menurunkan level dimensi menjadi hanya 2 dimensi, sehingga dapat dengan mudah diplot menjadi grafik. Dalam kasus ini, kita akan menggunakan metode pca.
+
+<img src='https://github.com/sayid-alt/water-quality-prediction/blob/main/images/plot_target_distribution.png?raw=true' />
+<img src='https://github.com/sayid-alt/water-quality-prediction/blob/main/images/target_distribution.png?raw=true' />
+
+Plot tersebut memberi tahu kita bahwa distribusi antar kelas tercampur. Ini merupakan masalah yang cukup besar. Karena model akan lebih sulit dalam klasifikasi. Namun, bagaimanapun, kita akan mengambil sampel ulang kelas minoritas yang merupakan kelas yang dapat diminum, sehingga akan terdistribusi secara merata dengan kelas yang tidak dapat diminum.
+
+Dalam kasus ini, kita akan menggunakan SMOTE (Synthetic Minority Over-sampling Technique) yang merupakan teknik populer untuk menangani ketidakseimbangan kelas dalam kumpulan data machine learning.
+
+Berikut visualisasi data setelah *resampling*.
+
+<img src="https://github.com/sayid-alt/water-quality-prediction/blob/main/images/distribution_target_distribution_barplot.png?raw=true"/>
+<img src="https://github.com/sayid-alt/water-quality-prediction/blob/main/images/resampled_target_distribution.png?raw=true"/ >
+
+Dari data yang sudah diresampling akan dilatih ulang untuk melihat kualitas dari model yang diterapkan. Berikut hasil ringkasan dari pelatihan pada data resamplling.
+
+|     | model_names            | resampled_train_scores | resampled_test_scores |
+| --- | ---------------------- | ---------------------- | --------------------- |
+| 1   | RandomForestClassifier | 1.000000               | 0.64875               |
+| 2   | SVC                    | 0.765957               | 0.62625               |
+| 3   | LogisticRegression     | 0.509387               | 0.55250               |
+
+Dari hasil diatas, original data menunjukkan hasil yang lebih baik pada model `Random Forest` dengan `train` dan `test` sample `1.00` dan `0.69` secara berurut. Dengan demikian, evaluasi dan hyperparameter-tuning akan menggunakan data original dan model `random forest`.
+
 ### Hyperparameter-tuning
 Proses ini akan menggunakan Model [**Random Forest**](https://scikit-learn.org/1.5/modules/generated/sklearn.ensemble.RandomForestClassifier.html), sebagai estimator dengan parameters yang akan menjadi percobaan sebagai berikut:
 
