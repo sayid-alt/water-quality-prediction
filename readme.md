@@ -310,6 +310,15 @@ Metrik evaluasi yang digunakan pada pengembangan model ini antara lain:
 2. **Precision**
 	Precision mengukur seberapa akurat model dalam memprediksi kelas positif dari semua prediksi positif yang dibuat. Fokus utamanya adalah meminimalkan _False Positive_ (FP), yaitu prediksi salah untuk kelas positif.
 
+Kita telah melihat indikator overfit dari penilaian rangkaian kereta dan set pengujian. Di bawah ini kita melihat lebih dalam pada visualisasi makna tersebut
+
+<img src='https://github.com/sayid-alt/water-quality-prediction/blob/main/images/learning_curve.png?raw=true'/>
+### AUC
+Kurva ROC digambar dengan menghitung rasio positif sebenarnya (TPR) dan rasio positif palsu (FPR) pada setiap ambang batas yang memungkinkan (dalam praktiknya, pada interval tertentu), lalu membuat grafik TPR di atas FPR.
+
+
+<img src="https://github.com/sayid-alt/water-quality-prediction/blob/main/images/false_positive_rate_plot.png?raw=true"/>
+AUC = 0,60 artinya kemampuan model menebak secara acak nilai positif sedikit lebih baik dari pada menebak secara acak, yang berarti AUC = 1,0 merupakan tebakan sempurna dan AUC = 0,5 merupakan tebakan acak.
 
 ### Precision
 Pada kasus ini, matrik Precision akan dimaksimalkan nilainya, melihat False Positive sangat beresiko. Artinya, dalam keadaan model salah dalam memprediksi air bersifat potable menjadi resiko yang sangat fatal, `karena model akan memprediksi air kotor sebagai air bersih`.
@@ -328,11 +337,72 @@ Nilai probabilitas pada prediksi model akan dibatasi dengan `threshold=0.7`, ber
 |              |           |          |          |            |
 
 #### Confusion Matrix
-<img src="https://github.com/sayid-alt/water-quality-prediction/blob/main/images/Pasted%20image%2020241216182324.png?raw=true"/>
+<img src="https://github.com/sayid-alt/water-quality-prediction/blob/main/images/Confusion_Matrix_th_.png?raw=true"/>
+Secara keseluruhan, model tersebut dapat menunjukkan air yang tidak layak minum dan air yang layak minum dengan lebih baik. Dan kita dapat melihat total positif palsu dan positif benar masing-masing adalah 75 dan 38. Dalam kasus kita, positif palsu lebih berisiko. Karena memprediksi air yang tidak layak minum sebagai air yang layak minum secara salah itu berbahaya. Dalam kasus tersebut, kita akan menyesuaikan ambang batas agar sesuai dengan persyaratan kita.
 
+Bagaimanapun, kita harus meningkatkan nilai presisi, di mana positif palsu paling rendah. Oleh karena itu, kita mendefinisikan ambang batas sama dengan 0,7
+
+Berikut Kode python yang digunakan untuk menampilkan ringkasan dari evaluasi model dengan ambang batas 0,7
+
+```python
+# Probabilities for the positive class (column 1)
+y_test_proba = model.predict_proba(X_test_final)[:, 1]
+
+# adjusting the threshold to 0.7 to be considered as a true class
+threshold = 0.7
+
+# Apply the threshold
+predictions = np.where(y_test_proba > threshold, 1, 0)
+target_names = ['non potable', 'potable']
+report_cls = classification_report(y_test_final, 
+                               predictions, 
+                               target_names=target_names, 
+                               output_dict=True)
+print(f"th={threshold}\n")
+
+fig, axes = plt.subplots(figsize=(10, 5), ncols=2)
+axes = axes.flatten()
+
+# display confusion matrix
+display(pd.DataFrame(report_cls).T)
+display(ConfusionMatrixDisplay.from_predictions(y_test_final, predictions, cmap='rocket_r', ax=axes[0]))
+
+# precsision recall display
+display_prec_rec = PrecisionRecallDisplay.from_predictions(
+    y_test_final, predictions, ax=axes[1]
+)
+_ = display_prec_rec.ax_.set_title("2-class Precision-Recall curve")
+
+baseline_precision = sum(y_test_final) / len(y_test_final)  # Proportion of positives
+plt.axhline(y=baseline_precision, color="red", linestyle="--", label="Chance Level")
+plt.scatter(x=[report_cls['potable']['recall']],
+            y=[report_cls['potable']['precision']])
+plt.legend()
+plt.xlim(0, 1)
+plt.ylim(0, 1)
+
+display(display_prec_rec)
+```
+
+Output
+
+|              | precision | recall   | f1-score | support    |
+| ------------ | --------- | -------- | -------- | ---------- |
+| non potable  | 0.622465  | 0.997500 | 0.766571 | 400.000000 |
+| potable      | 0.933333  | 0.054688 | 0.103321 | 256.000000 |
+| accuracy     | 0.629573  | 0.629573 | 0.629573 | 0.629573   |
+| macro avg    | 0.777899  | 0.526094 | 0.434946 | 656.000000 |
+| weighted avg | 0.743779  | 0.629573 | 0.507742 | 656.000000 |
+<img src="https://github.com/sayid-alt/water-quality-prediction/blob/main/images/eval_summary.png?raw=true"/>
+
+Kesimpulan:
+Presisinya sama dengan 0,93. Yang sebenarnya bagus untuk model yang memiliki positif palsu hanya sekitar 7% dari prediksi. Namun sebagai kompensasinya, recall sangat lemah yang nilainya hanya 0,054. Artinya model tersebut salah memprediksi air minum sebagai air tidak minum sekitar 0,95 probabilitas.
+
+Namun, memprediksi air tidak minum sebagai air minum (positif palsu) lebih berisiko daripada sebaliknya. Dari evaluasi tersebut, kami akan menyesuaikan ambang batas sama dengan 0,7 untuk membuat presisi lebih tinggi yang berarti mengurangi jumlah positif palsu.
 
 ---
 
 # Refernces:
 * https://link.springer.com/article/10.1007/s12403-020-00357-6
+* https://developers.google.com/machine-learning/crash-course/classification/roc-and-auc
 * *Ji, Y., Wu, J., Wang, Y. et al. Seasonal Variation of Drinking Water Quality and Human Health Risk Assessment in Hancheng City of Guanzhong Plain, China. Expo Health **12**, 469–485 (2020). https://doi.org/10.1007/s12403-020-00357-6*
